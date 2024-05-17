@@ -191,8 +191,8 @@ Cho phép xem chi tiết/thêm/xóa/cập nhật thông tin sinh viên.
     ![alt](./image/pr1.png)
 
     ![alt](./image/pr2.png)
-
-- Hướng dẫn sử dụng `ansible playbook` để triển khai các thành phần hệ thống
+#### 3. Automation 
+Viết ansible playbooks để triển khai các image docker của các dịch vụ web, api, db, mỗi dịch vụ 1 role
 
   Kiến trúc Ansible: 
 

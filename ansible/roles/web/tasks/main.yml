@@ -1,0 +1,13 @@
+---
+- name: Pull web service Docker image
+  docker_image:
+    name: hant-web-service
+    state: present
+
+- name: Run web service container
+  docker_container:
+    name: web-service
+    image: hant-web-service
+    state: started
+    ports:
+      - "80:80"
