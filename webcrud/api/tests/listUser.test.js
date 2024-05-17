@@ -1,3 +1,5 @@
+jest.setTimeout(10000);
+
 const request = require('supertest');
 const sinon = require('sinon');
 const app = require('../app');

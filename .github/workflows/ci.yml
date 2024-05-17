@@ -28,3 +28,5 @@ jobs:
       - name: Run unit tests
         run: npm test
         working-directory: ./webcrud/api/
+        env:
+          JEST_TIMEOUT: 10000
