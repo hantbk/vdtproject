@@ -184,87 +184,13 @@ Cho phép xem chi tiết/thêm/xóa/cập nhật thông tin sinh viên.
 
 - Lịch sử chạy CI
 
-    ![alt](./images/lich-su-CI.png)
+    ![alt](./image/ci2.png)
     
-- Tự động chạy test khi Pull request, Python Coverage
+- Tự động chạy test khi Pull request
 
-    ![alt](./images/CI-PR1.png)
+    ![alt](./image/pr1.png)
 
-    ![alt](./images/CI-.png)
-
-#### 3. Continuous Delivery
-
-- Ảnh minh họa kiến trúc triển khai và bản mô tả
-
-    ![alt](./images/mohinh.png)
-
-    - Hệ thống có 3 host bao gồm 1 máy chính(localhost) và 2 máy ảo bên trong nó. Mỗi host sẽ đều triển khai cả 3 service của Webapp đó là frontend, backend, database.
-    => Tổng cộng mỗi dịch vụ sẽ được triển khai trên 3 Container khác nhau
-
-    - 1 con nginx sẽ được triển khai trên máy chính nhằm thực hiện việc cân bằng tải frontend, backend trên cả 3 máy 
-    - File cấu hình Load balancer được hiển thị tại [đây](./Ansible/roles/lb/templates/nginx.conf) 
-
-- Video kiểm tra hoạt động của bộ cân bằng tải ( bên trong thư mục images)
-
-  ![alt](./images/test-lb.gif)
-
-- File setup CD 
-
-    ```yaml
-    name: Build and push images to DockerHub
-
-  on:
-    push:
-      tags:
-        - '*'
-
-  jobs:
-    build-and-push:
-      name: Build and Push image to DockerHub
-      runs-on: ubuntu-latest
-      steps:   
-        - name: Check out the repo
-          uses: actions/checkout@v3
-
-        - name: Log in to Docker Hub
-          uses: docker/login-action@v2
-          with:
-            username: ${{ secrets.DOCKERHUB_USERNAME }}
-            password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v2
-
-        - name: Build and push Backend Docker image
-          uses: docker/build-push-action@v4
-          with:
-            context: "{{defaultContext}}:sonbm/app"
-            push: true
-            tags: ${{ secrets.DOCKERHUB_USERNAME }}/sonbm-app:${{  github.ref_name }}
-
-        - name: Build and push Frontend Docker image
-          uses: docker/build-push-action@v4
-          with:
-            context: "{{defaultContext}}:sonbm/frontend"
-            push: true
-            tags: ${{ secrets.DOCKERHUB_USERNAME }}/sonbm-frontend:${{  github.ref_name }}
-      ```
-
-- Output của luồng build và push Docker Image lên Docker Hub
-
-    ![alt](./images/luong-build-push.png)
-
-  - Output log Backend
-
-    ![alt](./images/CD-log-backend.png)
-
-  - Output log Frontend
-
-    ![alt](./images/CD-log-frontend.png)
-
-- Lịch sử CD
-
-    ![alt](./images/lich-su-CD.png)
+    ![alt](./image/pr2.png)
 
 - Hướng dẫn sử dụng `ansible playbook` để triển khai các thành phần hệ thống
 

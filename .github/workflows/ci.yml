@@ -2,14 +2,11 @@ name: Continuous Integration
 
 on:
   pull_request: 
-    branches: // Quá trình CI sẽ chạy khi có pull request vào nhánh main
+    branches: 
       - main 
   push:
-    branches: // Quá trình CI sẽ chạy khi có push commit lên mọi nhánh
+    branches: 
       - '*'
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 jobs:
   test:
@@ -28,7 +25,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
