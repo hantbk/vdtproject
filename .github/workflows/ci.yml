@@ -1,13 +1,17 @@
-name: Continuous Integration on Push Commit on Any Branch
+name: Continuous Integration
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
-      - '*'  
+      - '*' 
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -15,10 +19,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'
+          node-version: '14'
 
       - name: Install dependencies
         run: npm install
+        working-directory: ./webcrud/api/
 
       - name: Run unit tests
         run: npm test
+        working-directory: ./webcrud/api/
