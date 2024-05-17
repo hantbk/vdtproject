@@ -180,7 +180,7 @@ Cho phép xem chi tiết/thêm/xóa/cập nhật thông tin sinh viên.
     ```
 - Output log của luồng CI
      
-     ![alt](./images/log-test-CI.png)
+     ![alt](./image/ci1.png)
 
 - Lịch sử chạy CI
 
