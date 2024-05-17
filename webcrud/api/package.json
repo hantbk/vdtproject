@@ -6,7 +6,6 @@
   "scripts": {
     "start": "nodemon server.js",
     "test": "jest"
-    
   },
   "keywords": [],
   "author": "",
@@ -22,6 +21,7 @@
     "supertest": "^7.0.0"
   },
   "devDependencies": {
-    "mongodb-memory-server": "^9.2.0"
+    "mongodb-memory-server": "^9.2.0",
+    "jest": "^27.4.7"
   }
 }
