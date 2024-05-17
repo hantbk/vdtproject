@@ -1,11 +1,11 @@
 name: Continuous Integration
 
 on:
-  pull_request:
-    branches:
-      - main
+  pull_request: 
+    branches: // Quá trình CI sẽ chạy khi có pull request vào nhánh main
+      - main 
   push:
-    branches:
+    branches: // Quá trình CI sẽ chạy khi có push commit lên mọi nhánh
       - '*'
 
 jobs:
