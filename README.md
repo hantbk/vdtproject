@@ -3,62 +3,136 @@
 
 ### Phát triển một 3-tier web application đơn giản 
 Hiển thị danh sách sinh viên tham gia chương trình VDT2024 dưới dạng bảng với các thông tin sau: Họ và tên, Giới tính, trường đang theo học. 
+![Home](./image/danhsachsv.png)
 Cho phép xem chi tiết/thêm/xóa/cập nhật thông tin sinh viên.
 
+- Thêm sinh viên
+![Create](./image/createUser1.png)
+![Create](./image/createUser2.png)
 
+- Xem chi tiết sinh viên
+![Detail](./image/ListUserInfo.png)
 
+- Cập nhật thông tin sinh viên
+![Update](./image/updateUser1.png)
+![Update](./image/updateUser2.png)
+
+- Xóa sinh viên
+![Delete](./image/deleteUser.png)
 
  - Mã nguồn frontend: [web](./webcrud/web/)
  - Mã nguồn backend: [api](./webcrud/api/app.js)
  - Mã nguồn database: [db](./webcrud/db/)
+
+ - Kết quả unit test cho các chức năng API: 
+ ![unit_test](./image/unit_test.png)
+
  - Mã nguồn unit test cho các chức năng API: [unit_test](./webcrud/api/tests/)
 
 ### Triển khai web application sử dụng các DevOps tools & practices
 
 #### 1. Containerization 
  - Dockerfile cho từng dịch vụ: 
-- [Frontend](./sonbm/frontend/Dockerfile) 
+- [Web](./webcrud/web/Dockerfile) 
     ```Dockerfile
-    FROM node:18.16.0-alpine3.17 AS build
+    # Stage 1: Build the React app
+    FROM node:lts-alpine AS build
+
+    # Set working directory
     WORKDIR /app
-    COPY package*.json ./
+
+    # Copy package.json and package-lock.json
+    COPY package.json .
+    COPY package-lock.json .
+
+    # Install dependencies
     RUN npm install
-    RUN npm install axios
+
+    # Copy the rest of the application code
     COPY . .
+
+    # Build the React app
     RUN npm run build
 
-    FROM nginx:1.22.0-alpine AS production
-    COPY --from=build /app/build /usr/share/nginx/html
+    # Stage 2: Serve the built React app
+    FROM nginx:alpine
+
+    # Copy the built React app from the previous stage
+    COPY --from=build /app/dist /usr/share/nginx/html
+
+    # Copy nginx configuration file
     COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+    # Expose port 80
     EXPOSE 80
-    CMD [ "nginx", "-g", "daemon off;" ]
+
+    # Start nginx
+    CMD ["nginx", "-g", "daemon off;"]
     ```
-- [Backend](./sonbm/app/Dockerfile)
+- [Api](./webcrud/api/Dockerfile)
 
     ```Dockerfile
-    FROM python:3.9
+    # Stage 1: Build the application
+    FROM node:lts-alpine AS build
+
     WORKDIR /app
-    ENV FLASK_APP=api.py
-    ENV FLASK_RUN_HOST=0.0.0.0
-    COPY ./requirements.txt .
-    RUN pip install -r requirements.txt
-    EXPOSE 5000
+
+    # Copy package.json and package-lock.json to the working directory
+    COPY package*.json ./
+
+    # Install dependencies
+    RUN npm ci --only=production
+
+    # Copy the rest of the application code to the working directory
     COPY . .
-    CMD ["python3", "-m", "flask", "run"]
+
+    # Stage 2: Production-ready image
+    FROM node:lts-alpine AS production
+
+    WORKDIR /app
+
+    # Copy only necessary files from build stage
+    COPY --from=build /app/package*.json ./
+    COPY --from=build /app/node_modules ./node_modules
+    COPY --from=build /app/server.js ./
+
+    # Expose the port that app runs on
+    EXPOSE 3000
+
+    # Command to run your app
+    CMD ["node", "server.js"]
+
     ```
-- Output câu lệnh build và history image frontend
+- [Db](./webcrud/db/Dockerfile)
 
-    ![alt](./images/build-fe.png)
-    ![alt](./images/history-fe.png)
+    ```Dockerfile
+    FROM mongo:4.4.6
 
-- Output câu lệnh build và history image backend
+    COPY attendees.json /docker-entrypoint-initdb.d/attendees.json
+    COPY init-data.sh /docker-entrypoint-initdb.d/init-data.sh
 
-    ![alt](./images/build-be.png)
-    ![alt](./images/history-be.png)
+    RUN chmod +x /docker-entrypoint-initdb.d/init-data.sh
 
-- Output history database
+    CMD ["mongod"]
 
-    ![alt](./images/history-.png)
+    ```
+- Output câu lệnh build và history image web service
+
+    ![alt](./image/web_image.png)
+
+    ![alt](./image/web_history.png)
+
+- Output câu lệnh build và history image api service
+
+    ![alt](./image/api_image.png)
+
+    ![alt](./image/api_history.png)
+
+- Output câu lệnh build và history image db service
+
+    ![alt](./image/db_image.png)
+
+    ![alt](./image/db_history.png)
 
 #### 2. Continuous Integration
  - File setup công cụ CI:
