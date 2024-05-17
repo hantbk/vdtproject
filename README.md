@@ -135,55 +135,47 @@ Cho phép xem chi tiết/thêm/xóa/cập nhật thông tin sinh viên.
     ![alt](./image/db_history.png)
 
 #### 2. Continuous Integration
+- Tự động chạy unit test khi tạo Pull request vào nhánh main
+- Tự động chạy unit test khi push commit lên một nhánh
  - File setup công cụ CI:
 
-    ```yaml
-    # This workflow will install Python dependencies, run tests and lint with a single version of Python
-    # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-    name: Python application
+    ```yml
+    name: Continuous Integration
 
     on:
+      pull_request: 
+        branches: // Quá trình CI sẽ chạy khi có pull request vào nhánh main
+          - main 
       push:
-        branches:
+        branches: // Quá trình CI sẽ chạy khi có push commit lên mọi nhánh
           - '*'
-      pull_request:
-        branches: [ "master" ]
 
-    permissions:
-      contents: read
-      pull-requests: write
     jobs:
-      build:
-
+      test:
         runs-on: ubuntu-latest
 
+        services:
+          mongodb:
+            image: mongo:latest
+            ports:
+              - 27017:27017
+
         steps:
-        - uses: actions/checkout@v3
-        - name: Set up Python 3.10
-          uses: actions/setup-python@v3
-          with:
-            python-version: "3.10"
-        - name: Install dependencies
-          run: |
-            python -m pip install --upgrade pip
-            python -m pip install flake8 pytest pytest-cov bson
-            pip install -r ./sonbm/app/requirements.txt
-        - name: Lint with flake8
-          run: |
-            # stop the build if there are Python syntax errors or undefined names
-            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-            # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-            flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        - name: Test with pytest
-          run: |
-            pytest --cov-report "xml:coverage.xml"  --cov=.
-        - name: Create Coverage 
-          if: ${{ github.event_name == 'pull_request' }}
-          uses: orgoro/coverage@v3
-          with:
-              coverageFile: coverage.xml
-              token: ${{ secrets.GITHUB_TOKEN }}
+          - name: Checkout code
+            uses: actions/checkout@v2
+
+          - name: Set up Node.js
+            uses: actions/setup-node@v2
+            with:
+              node-version: '18'
+
+          - name: Install dependencies
+            run: npm install
+            working-directory: ./webcrud/api/
+
+          - name: Run unit tests
+            run: npm test
+            working-directory: ./webcrud/api/
 
     ```
 - Output log của luồng CI
