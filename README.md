@@ -182,9 +182,14 @@ Cho phép xem chi tiết/thêm/xóa/cập nhật thông tin sinh viên.
      
      ![alt](./image/ci1.png)
 
+     ![alt](./image/ci3.png)
+
 - Lịch sử chạy CI
 
+    Success
     ![alt](./image/ci2.png)
+    Fail
+    ![alt](./image/ci4.png)
     
 - Tự động chạy test khi Pull request
 
