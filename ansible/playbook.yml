@@ -1,0 +1,28 @@
+---
+- name: Install Docker
+  hosts: all
+  become: true
+  gather_facts: true
+  roles:
+    - common
+
+- name: Deploy MongoDB container
+  hosts: db_servers
+  become: true
+  gather_facts: true
+  roles:
+    - db
+
+- name: Deploy Server Container
+  hosts: api_servers
+  become: true
+  gather_facts: true
+  roles:
+    - api
+
+- name: Deploy Web Container
+  hosts: web_servers
+  become: true
+  gather_facts: true
+  roles:
+    - web

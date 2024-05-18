@@ -1,4 +1,4 @@
-## Project giữa kỳ
+## Project giữa kỳ Viettel Digital Talent 2024 - Cloud 
 ### Nguyễn Thanh Hà
 
 ### Phát triển một 3-tier web application đơn giản 
@@ -184,7 +184,7 @@ Cho phép xem chi tiết/thêm/xóa/cập nhật thông tin sinh viên.
 
      ![alt](./image/ci3.png)
 
-- Lịch sử chạy CI
+- Lịch sử chạy CI khi push commit
 
     Success
     ![alt](./image/ci2.png)
@@ -196,6 +196,16 @@ Cho phép xem chi tiết/thêm/xóa/cập nhật thông tin sinh viên.
     ![alt](./image/pr1.png)
 
     ![alt](./image/pr2.png)
+
+- Lịch sử chạy CI khi Pull request
+
+    ![alt](./image/pr3.png)
+
+- Output log của luồng CI khi Pull request
+
+    ![alt](./image/pr4.png)
+
+    ![alt](./image/pr5.png)
 #### 3. Automation 
 Viết ansible playbooks để triển khai các image docker của các dịch vụ web, api, db, mỗi dịch vụ 1 role
 

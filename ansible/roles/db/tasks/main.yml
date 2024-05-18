@@ -1,0 +1,29 @@
+- name: Gather Docker network facts
+  docker_network_facts:
+    filters:
+      name: hant_default
+  register: docker_network
+  become: true
+
+- name: Create Docker network hant_default if it doesn't exist
+  docker_network:
+    name: hant_default
+    state: present
+  when: docker_network.networks | length == 0
+  become: true
+
+- name: Pull hant-db-service Docker image
+  docker_image:
+    name: hant-db-service
+    state: present
+
+- name: Run hant-db-service container
+  docker_container:
+    name: db-container
+    image: hant-db-service
+    state: started
+    ports:
+      - "27017:27017"
+    networks:
+      - name: hant_default
+

@@ -1,13 +1,28 @@
----
-- name: Pull web service Docker image
+- name: Gather Docker network facts
+  docker_network_facts:
+    filters:
+      name: hant_default
+  register: docker_network
+  become: true
+
+- name: Create Docker network hant_default if it doesn't exist
+  docker_network:
+    name: hant_default
+    state: present
+  when: docker_network.networks | length == 0
+  become: true
+
+- name: Pull hant-web-service Docker image
   docker_image:
     name: hant-web-service
     state: present
 
-- name: Run web service container
+- name: Run hant-web-service container
   docker_container:
-    name: web-service
+    name: web-container
     image: hant-web-service
     state: started
     ports:
       - "80:80"
+    networks:
+      - name: hant_default
