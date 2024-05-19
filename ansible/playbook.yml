@@ -10,9 +10,3 @@
     - api
     - db
 
-# ---
-# - name: SSH vào máy ảo và thực hiện một số tác vụ
-#   hosts: all
-#   tasks:
-#     - name: Thực hiện lệnh uptime trên máy ảo
-#       command: uptime

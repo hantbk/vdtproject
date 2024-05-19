@@ -1,5 +1,5 @@
-## Project giữa kỳ Viettel Digital Talent 2024 - Cloud 
-### Nguyễn Thanh Hà
+# Project giữa kỳ Viettel Digital Talent 2024 - Cloud 
+## Nguyễn Thanh Hà
 
 ### Phát triển một 3-tier web application đơn giản 
 Hiển thị danh sách sinh viên tham gia chương trình VDT2024 dưới dạng bảng với các thông tin sau: Họ và tên, Giới tính, trường đang theo học. 
@@ -97,7 +97,7 @@ Cho phép xem chi tiết/thêm/xóa/cập nhật thông tin sinh viên.
     COPY --from=build /app/server.js ./
 
     # Expose the port that app runs on
-    EXPOSE 3000
+    EXPOSE 9000
 
     # Command to run your app
     CMD ["node", "server.js"]
@@ -118,21 +118,21 @@ Cho phép xem chi tiết/thêm/xóa/cập nhật thông tin sinh viên.
     ```
 - Output câu lệnh build và history image web service
 
-    ![alt](./image/web_image.png)
+    ![alt](./image/web-build.png)
 
-    ![alt](./image/web_history.png)
+    ![alt](./image/web-history.png)
 
 - Output câu lệnh build và history image api service
 
-    ![alt](./image/api_image.png)
+    ![alt](./image/api-build.png)
 
-    ![alt](./image/api_history.png)
+    ![alt](./image/api-history.png)
 
 - Output câu lệnh build và history image db service
 
-    ![alt](./image/db_image.png)
+    ![alt](./image/db-build.png)
 
-    ![alt](./image/db_history.png)
+    ![alt](./image/db-history.png)
 
 #### 2. Continuous Integration
 - Tự động chạy unit test khi tạo Pull request vào nhánh main
@@ -207,11 +207,38 @@ Cho phép xem chi tiết/thêm/xóa/cập nhật thông tin sinh viên.
 
     ![alt](./image/pr5.png)
 #### 3. Automation 
-Viết ansible playbooks để triển khai các image docker của các dịch vụ web, api, db, mỗi dịch vụ 1 role
+#### Viết ansible playbooks để triển khai các image docker của các dịch vụ web, api, db, mỗi dịch vụ 1 role
 
-  Kiến trúc Ansible: 
+Cấu trúc thư mục Ansible:
 
-    ![alt](./images/tree-ansible.png)
+    ansible/
+    ├── roles/
+    │   ├── common/
+    │   │   ├── tasks/
+    │   │   │   └── main.yml
+    │   │   └── vars/
+    │   │       └── main.yml
+    │   ├── web/
+    │   │   ├── tasks/
+    │   │   │   └── main.yml
+    │   │   └── vars/
+    │   │       └── main.yml
+    │   ├── api/
+    │   │   ├── tasks/
+    │   │   │   └── main.yml
+    │   │   └── vars/
+    │   │       └── main.yml
+    │   └── db/
+    │       ├── tasks/
+    │       │   └── main.yml
+    │       ├── files/
+    │       │   ├── attendees.json
+    │       │   └── init-data.sh
+    │       └── vars/
+    │           └── main.yml
+    ├── playbook.yml
+    └── inventory.yml
+
 
   - Danh sách các roles: 
      
@@ -221,77 +248,66 @@ Viết ansible playbooks để triển khai các image docker của các dịch 
     - [db](./Ansible/roles/db/tasks/main.yaml)
     - [lb](./Ansible/roles/lb/tasks/main.yaml)
 
+#### Trong từng role cho phép tuỳ biến cấu hình của các dịch vụ thông qua các variables
 
-  Sử dụng lệnh sau để chạy Ansible playbook:
-  `ansible-playbook -i Ansible/inventory/inventory.yaml Ansible/setup.yaml`
+- variables cho từng role:
+    - [common](./Ansible/roles/common/vars/main.yaml)
+    - [web](./Ansible/roles/web/vars/main.yaml)
+    - [api](./Ansible/roles/api/vars/main.yaml)
+    - [db](./Ansible/roles/db/vars/main.yaml)
+    - [lb](./Ansible/roles/lb/vars/main.yaml)
 
-  Với cấu hình file playbook là [setup.yaml](./Ansible/setup.yaml)
+#### Cho phép triển khai các dịch vụ trên các host khác nhau thông qua file inventory
+Ví dụ triển khai hệ thống với Ansible: Triển khai lên 2 máy ảo host1 và host2
+![alt](./image/setup.png)
+
+Sử dụng inventory file là [inventory.yml](./Ansible/inventory.yml)
+```yaml
+---
+all:
+  hosts:
+    host1:
+      ansible_host: 192.168.1.22
+      ansible_user: hant
+      ansible_become: true
+      ansible_become_method: sudo
+      ansible_become_password: 123
+
+    host2:
+      ansible_host: 192.168.1.21
+      ansible_user: hant
+      ansible_become: true
+      ansible_become_method: sudo
+      ansible_become_password: 123
+```
+
+  Với cấu hình file playbook là [playbook.yml](./Ansible/setup.yaml)
 
   ```yaml
   ---
-  - name: log
-    hosts: localhost
-    become: true
-    gather_facts: true
-    roles:
-      - logging
-
-
-
-  - name: sonbm
+  - name: hant
     hosts: all
     become: true
     gather_facts: true
+
     roles:
       - common
-      - db
       - web
       - api
-      - monitor
-
-  - name: lb
-    hosts: localhost
-    become: true
-    gather_facts: true
-    roles:
-      - lb
+      - db
   ```
+
+  Sử dụng lệnh sau để chạy Ansible playbook:
+  `ansible-playbook -i inventory.yml playbook.yml`
 
 - Output log triển khai hệ thống
 
-    ![alt](./images/log-ansible1.png)
+    ![alt](./image/ansi1.png)
 
-    ![alt](./images/log-ansible2.png)
+    ![alt](./image/ansi2.png)
 
-    ![alt](./images/log-ansible-3.png)
+    ![alt](./image/ansi3.png)
 
-    ![alt](./images/log-ansible4.png)
+- Kết quả triển khai lên máy ảo host1 và host2
+    ![alt](./image/ansi4.png)
 
-    ![alt](./images/log-ansible5.png)
-
-    ![alt](./images/log-ansible6.png)
-
-#### 4. Monitoring
-- Role monitor chứa các playbook và cấu hình giám sát cho hệ thống
-  - Ta có file thực thi role monitor lại [đây](./Ansible/roles/monitor/tasks/main.yaml) 
-  - File cấu hình Prometheus tại [đây](./Ansible/roles/monitor/prometheus/prometheus.yml)
-
-- Ảnh chụp dashboard giám sát nodes & containers, có thể sử dụng hệ thống prometheus tập trung ở 171.236.38.100:9090
-
-  ![alt](./images/query-prom.png)
-
-#### 5. Logging
-
-- Ansible playbook triển khai các dịch vụ collect log (tách module logging)
-
-  - File thực thi role logging tại [đây](./Ansible/roles/logging/tasks/main.yaml)
-
-  - File cấu hình FLuentd tại [đây](./Ansible/roles/logging/files/fluentd/conf/fluent.conf)
-
-  - Kết quả index lấy từ Kibana
-
-    ![alt](./images/index-kibana.png)
-
-  - Kết quả sample log lấy từ Kibana
-
-    ![image](https://github.com/bmson7112/Viettel-Digital-Talent-2023/assets/79183573/a9c6f568-e32d-45f1-852c-255665816f21)
