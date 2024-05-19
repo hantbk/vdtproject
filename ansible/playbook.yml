@@ -1,28 +1,18 @@
 ---
-- name: Install Docker
+- name: hant
   hosts: all
   become: true
   gather_facts: true
+
   roles:
     - common
-
-- name: Deploy MongoDB container
-  hosts: db_servers
-  become: true
-  gather_facts: true
-  roles:
+    - web
+    - api
     - db
 
-- name: Deploy Server Container
-  hosts: api_servers
-  become: true
-  gather_facts: true
-  roles:
-    - api
-
-- name: Deploy Web Container
-  hosts: web_servers
-  become: true
-  gather_facts: true
-  roles:
-    - web
+# ---
+# - name: SSH vào máy ảo và thực hiện một số tác vụ
+#   hosts: all
+#   tasks:
+#     - name: Thực hiện lệnh uptime trên máy ảo
+#       command: uptime

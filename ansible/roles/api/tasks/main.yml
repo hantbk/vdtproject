@@ -1,28 +1,24 @@
-- name: Gather Docker network facts
-  docker_network_facts:
-    filters:
-      name: hant_default
+# roles/api/tasks/main.yml
+
+- name: Check if docker network exists
+  docker_network_info:
+    name: "{{ docker_network_name }}"
   register: docker_network
   become: true
 
-- name: Create Docker network hant_default if it doesn't exist
+- name: Create docker network
   docker_network:
-    name: hant_default
+    name: "{{ docker_network_name }}"
     state: present
-  when: docker_network.networks | length == 0
+  when: docker_network.exists == false
   become: true
 
-- name: Pull hant-api-service Docker image
-  docker_image:
-    name: hant-api-service
-    state: present
-
-- name: Run hant-api-service container
+- name: Run docker image {{ api_image_name }}:{{ api_image_tag }}
   docker_container:
-    name: api-container
-    image: hant-api-service
-    state: started
-    ports:
-      - "8080:8080"
+    name: "{{ api_container_name }}"
+    image: "{{ api_image_name }}:{{ api_image_tag }}"
+    restart_policy: unless-stopped
     networks:
-      - name: hant_default
+      - name: "{{ docker_network_name }}"
+    hostname: "{{ api_hostname }}"
+    ports: "{{ api_ports }}"

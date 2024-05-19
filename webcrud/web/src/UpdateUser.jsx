@@ -7,16 +7,12 @@ import axios from "axios";
 function UpdateUser() {
   const { id } = useParams();
   const [name, setName] = useState("");
-  const [dob, setDob] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
   const [school, setSchool] = useState("");
-  const [country, setCountry] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:9000/getUser/' + id)
+    axios.get(`http://localhost:9000/getUser/` + id)
       .then(res => {
         console.log(res);
         setName(res.data.name);

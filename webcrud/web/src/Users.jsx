@@ -11,7 +11,7 @@ function Users() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:9000`)
+    .get(`http://localhost:9000`)
       .then((res) => {
         const totalCount = res.data.length; // Tính tổng số lượng người dùng
         setPageCount(Math.ceil(totalCount / perPage)); // Sử dụng Math.ceil để làm tròn lên
@@ -22,7 +22,7 @@ function Users() {
 
   const handleDelete = (id) => {
     axios
-      .delete(`http://localhost:9000/deleteUser/${id}`)
+    .delete(`http://localhost:9000/deleteUser/${id}`)
       .then((res) => {
         console.log(res);
         window.location.reload();

@@ -1,28 +1,26 @@
-- name: Gather Docker network facts
-  docker_network_facts:
-    filters:
-      name: hant_default
+# roles/web/tasks/main.yml
+
+- name: Check if docker network exists
+  docker_network_info:
+    name: "{{ docker_network_name }}"
   register: docker_network
   become: true
 
-- name: Create Docker network hant_default if it doesn't exist
+- name: Create docker network
   docker_network:
-    name: hant_default
+    name: "{{ docker_network_name }}"
     state: present
-  when: docker_network.networks | length == 0
+  when: docker_network.exists == false
   become: true
 
-- name: Pull hant-web-service Docker image
-  docker_image:
-    name: hant-web-service
-    state: present
-
-- name: Run hant-web-service container
+- name: Run docker image {{ web_image_name }}:{{ web_image_tag }}
   docker_container:
-    name: web-container
-    image: hant-web-service
-    state: started
-    ports:
-      - "80:80"
+    name: "{{ web_container_name }}"
+    image: "{{ web_image_name }}:{{ web_image_tag }}"
+    restart_policy: unless-stopped
     networks:
-      - name: hant_default
+      - name: "{{ docker_network_name }}"
+    hostname: "{{ web_hostname }}"
+    ports: "{{ web_ports }}"
+  become: true
+  tags: docker
