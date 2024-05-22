@@ -7,16 +7,16 @@
   roles:
     - common
 
-- name: Setup a 3-tier web application
-  hosts: all
-  become: true
-  gather_facts: true
+# - name: Setup a 3-tier web application
+#   hosts: all
+#   become: true
+#   gather_facts: true
 
-  roles:
-    - common
-    - web
-    - api
-    - db
+#   roles:
+#     - common
+#     - web
+#     - api
+#     - db
 
 - name: Setup Web service 
   hosts: all
