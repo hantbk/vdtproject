@@ -7,12 +7,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const mongoUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/crud";
+const mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/crud";
 
-mongoose.connect(mongoUri).then(() => {
+mongoose.connect(mongoURI).then(() => {
     console.log("Connected to MongoDB");
 }).catch((err) => {
-    console.log("Failed to connect to MongoDB", err);
+    console.log("Error connecting to MongoDB", err);
 });
 
 // POST request to create a new user

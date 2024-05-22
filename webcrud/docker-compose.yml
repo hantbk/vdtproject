@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  client:
+    image: hant-client
+    ports:
+      - "80:80"
+    networks:
+      - hant-network
+      
+  server:
+    image: hant-server
+    ports:
+      - "9000:9000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/webcrud
+    networks:
+      - hant-network
+
+  mongo:
+    image: hant-mongo
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - hant-network
+
+volumes:
+  mongo-data:
+
+networks:
+  hant-network:
