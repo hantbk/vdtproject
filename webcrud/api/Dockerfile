@@ -25,17 +25,3 @@ EXPOSE 9000
 
 # Command to run your app
 CMD ["npm", "start"]
-
-# FROM node:18-alpine
-
-# WORKDIR /usr/src/app
-
-# COPY package*.json ./
-
-# RUN npm install
-
-# COPY . .
-
-# EXPOSE 9000
-
-# CMD ["npm", "start"]
