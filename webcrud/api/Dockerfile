@@ -21,4 +21,5 @@ COPY --from=build /app ./
 
 EXPOSE 9000
 
+# Command to run your app
 CMD ["npm", "start"]
