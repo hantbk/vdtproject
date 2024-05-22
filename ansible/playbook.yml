@@ -1,5 +1,13 @@
 ---
-- name: hant
+- name: Setup Docker
+  hosts: all
+  become: true
+  gather_facts: true
+
+  roles:
+    - common
+
+- name: Setup a 3-tier web application
   hosts: all
   become: true
   gather_facts: true
@@ -10,3 +18,19 @@
     - api
     - db
 
+- name: Setup Web service 
+  hosts: all
+  become: true
+  gather_facts: true
+
+  roles:
+    - web
+
+- name: Setup API + DB service
+  hosts: all
+  become: true
+  gather_facts: true
+
+  roles:
+    - api
+    - db
