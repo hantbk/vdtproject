@@ -2,14 +2,18 @@ version: '3.8'
 
 services:
   client:
-    image: hant-client
+    build: 
+      context: ./web
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     networks:
       - hant-network
       
   server:
-    image: hant-server
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
     ports:
       - "9000:9000"
     depends_on:
@@ -20,7 +24,9 @@ services:
       - hant-network
 
   mongo:
-    image: hant-mongo
+    build: 
+      context: ./db
+      dockerfile: Dockerfile
     volumes:
       - mongo-data:/data/db
     networks:
