@@ -9,6 +9,8 @@ services:
       - "80:80"
     networks:
       - hant-network
+    environment:
+      - REACT_APP_API_URL=http://server:9000
       
   server:
     build: 

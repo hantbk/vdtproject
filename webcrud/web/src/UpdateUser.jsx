@@ -11,8 +11,10 @@ function UpdateUser() {
   const [school, setSchool] = useState("");
   const navigate = useNavigate();
 
+  const REACT_APP_API_URL = process.env.REACT_APP_API_URL || "http://localhost:9000";
+
   useEffect(() => {
-    axios.get(`http://localhost:9000/getUser/` + id)
+    axios.get(`${REACT_APP_API_URL}/getUser/` + id)
       .then(res => {
         console.log(res);
         setName(res.data.name);
@@ -25,7 +27,7 @@ function UpdateUser() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const result = await axios.put(`http://localhost:9000/updateUser/${id}`, { name, gender, school });
+      const result = await axios.put(`${REACT_APP_API_URL}/updateUser/${id}`, { name, gender, school });
       console.log(result);
       navigate("/");
     } catch (err) {
@@ -60,8 +62,8 @@ function UpdateUser() {
               required
             >
               <option value="">Select Gender</option>
-              <option value="Male">Nam</option>
-              <option value="Female">Nữ</option>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
               <option value="Others">Others</option>
             </select>
           </div>

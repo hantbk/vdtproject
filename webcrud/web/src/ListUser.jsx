@@ -6,8 +6,10 @@ function ListUser() {
     const { id } = useParams();
     const [user, setUser] = useState(null);
 
+    const REACT_APP_API_URL = process.env.REACT_APP_API_URL || "http://localhost:9000";
+
     useEffect(() => {
-        axios.get(`http://localhost:9000/getUser/${id}`)
+        axios.get(`${REACT_APP_API_URL}/getUser/${id}`)
             .then(res => {
                 setUser(res.data);
             })

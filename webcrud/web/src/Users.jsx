@@ -9,9 +9,11 @@ function Users() {
   const [perPage] = useState(8);
   const [pageCount, setPageCount] = useState(0);
 
+  const REACT_APP_API_URL = process.env.REACT_APP_API_URL || "http://localhost:9000";
+
   useEffect(() => {
     axios
-    .get(`http://localhost:9000`)
+    .get(`${REACT_APP_API_URL}`)
       .then((res) => {
         const totalCount = res.data.length; // Tính tổng số lượng người dùng
         setPageCount(Math.ceil(totalCount / perPage)); // Sử dụng Math.ceil để làm tròn lên
@@ -22,7 +24,7 @@ function Users() {
 
   const handleDelete = (id) => {
     axios
-    .delete(`http://localhost:9000/deleteUser/${id}`)
+    .delete(`${REACT_APP_API_URL}/deleteUser/${id}`)
       .then((res) => {
         console.log(res);
         window.location.reload();

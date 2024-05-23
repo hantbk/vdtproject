@@ -8,10 +8,12 @@ function CreateUser() {
   const [school, setSchool] = useState("");
   const navigate = useNavigate();
 
+  const REACT_APP_API_URL = process.env.REACT_APP_API_URL || "http://localhost:9000";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:9000/createUser", { name, gender, school });
+      const response = await axios.post(`${REACT_APP_API_URL}/createUser`, { name, gender, school });
       if (response.status === 201) { // Kiểm tra trạng thái trả về
         navigate("/");
       } else {
@@ -49,8 +51,8 @@ function CreateUser() {
               required
             >
               <option value="">Select Gender</option>
-              <option value="Male">Nam</option>
-              <option value="Female">Nữ</option>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
               <option value="Others">Others</option>
             </select>
           </div>
