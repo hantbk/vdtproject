@@ -1,0 +1,177 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-server
+  namespace: argocd
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  # Add your configuration here if needed
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-server
+  namespace: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argocd-server
+  template:
+    metadata:
+      labels:
+        app: argocd-server
+    spec:
+      serviceAccountName: argocd-server
+      containers:
+        - name: argocd-server
+          image: argoproj/argocd:v2.1.2
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 8081
+              name: https
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+          env:
+            - name: ARGOCD_SERVER_REDIS_PROXY_ADDRESS
+              value: "argocd-redis:6379"
+            - name: ARGOCD_REDIS_ADDRESS
+              value: "argocd-redis:6379"
+          volumeMounts:
+            - name: argocd-repo-server-tls
+              mountPath: /app/config/controller/tls
+              readOnly: true
+      volumes:
+        - name: argocd-repo-server-tls
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-server
+  namespace: argocd
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      nodePort: 30663
+    - name: https
+      port: 443
+      targetPort: 8081
+      nodePort: 31194
+  selector:
+    app: argocd-server
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-redis
+  namespace: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argocd-redis
+  template:
+    metadata:
+      labels:
+        app: argocd-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:6.2.6
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          livenessProbe:
+            tcpSocket:
+              port: 6379
+          readinessProbe:
+            tcpSocket:
+              port: 6379
+      volumes:
+        - name: redis-data
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-redis
+  namespace: argocd
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: argocd-redis
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+  namespace: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argocd-repo-server
+  template:
+    metadata:
+      labels:
+        app: argocd-repo-server
+    spec:
+      containers:
+        - name: argocd-repo-server
+          image: argoproj/argocd:v2.1.2
+          ports:
+            - containerPort: 8081
+              name: server
+          volumeMounts:
+            - name: repo-server-tls
+              mountPath: /app/config/controller/tls
+              readOnly: true
+      volumes:
+        - name: repo-server-tls
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-repo-server
+  namespace: argocd
+spec:
+  ports:
+    - port: 8081
+      targetPort: 8081
+      name: server
+  selector:
+    app: argocd-repo-server
